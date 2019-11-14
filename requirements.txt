@@ -13,7 +13,7 @@ ipaddress==1.0.17
 keyring==10.6.0
 keyrings.alt==3.0
 mechanize==0.4.2
-Pillow==6.1.0
+Pillow==6.2.0
 psycopg2==2.8.3
 pycairo==1.16.2
 pycrypto==2.6.1
