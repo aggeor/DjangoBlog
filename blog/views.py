@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.http import  HttpResponse
+from django.http import  HttpResponse, HttpResponseRedirect
 from django.contrib.auth.models import User
 from django.views.generic import (
     ListView,
@@ -14,9 +14,48 @@ from .models import Post
 
 def home(request):
     context={
-        'posts': Post.objects.all()
+        'posts': Post.objects.all(),
     }
     return render(request, 'blog/home.html',context)
+
+def like_post(request):
+    
+    
+    post = get_object_or_404(Post, id=request.POST.get('post_id'))
+    is_liked = False
+    
+    if post.likes.filter(id=request.user.id).exists():
+        post.likes.remove(request.user)
+        is_liked = False
+    else:
+        post.likes.add(request.user)
+        is_liked = True
+    context={
+        'posts': Post.objects.all(),
+        'is_liked': is_liked
+    }
+    return HttpResponseRedirect(post.refresh_to_home(),context)
+    #return render(request, 'blog/home.html',context)
+
+def detailed_like_post(request):
+    
+    
+    post = get_object_or_404(Post, id=request.POST.get('post_id'))
+    is_liked = False
+    
+    if post.likes.filter(id=request.user.id).exists():
+        post.likes.remove(request.user)
+        is_liked = False
+    else:
+        post.likes.add(request.user)
+        is_liked = True
+    context={
+        'post': post,
+        'is_liked': is_liked,
+    }
+    return HttpResponseRedirect(post.get_absolute_url(),context)
+    #return render(request, 'blog/post_detail.html',context)
+    #return HttpResponse(post.get_absolute_url(),context)
 
 class PostListView(ListView):
     model = Post
@@ -37,6 +76,7 @@ class UserPostListView(ListView):
 
 class PostDetailView(DetailView):
     model = Post
+    
 
 class PostCreateView(LoginRequiredMixin, CreateView):
     model = Post
@@ -69,6 +109,7 @@ class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         if self.request.user == post.author:
             return True
         return False
+
 
 def about(request):
     return render(request, 'blog/about.html',{'title':'About'})

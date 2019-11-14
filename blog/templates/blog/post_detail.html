@@ -1,4 +1,5 @@
 {% extends "blog/base.html" %}
+{% load crispy_forms_tags %}
 {% block content %}
     <article class="media content-section">
         <img class="rounded-circle article-img" src="{{ object.author.profile.image.url }}">
@@ -15,6 +16,21 @@
         </div>
         <h2 class="article-title">{{ object.title }}</h2>
         <p class="article-content">{{ object.content }}</p>
+        <form action="{% url 'detailed_like_post' %}" method="POST">
+            {% csrf_token %}
+                
+                {% if is_liked %}
+                    <button class="btn-outline-danger" type="submit" name="post_id" value="{{post.id}}">Dislike</button>
+                        
+                {% else %}
+                    <button class="btn-outline-info" type="submit" name="post_id" value="{{post.id}}">Like</button>
+                        
+                {% endif %}
+                {% for like in post.likes.all %}
+                    {{ like }}
+                {% endfor %}
+                {{ form|crispy }}
+        </form>
         </div>
     </article>
 {% endblock content %}

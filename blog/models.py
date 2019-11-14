@@ -8,8 +8,14 @@ class Post(models.Model):
     content = models.TextField()
     date_posted = models.DateTimeField(default=timezone.now)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
+    likes = models.ManyToManyField(User, related_name='likes', blank=True)
 
     def __str__(self):
         return  self.title
     def get_absolute_url(self):
         return reverse('post-detail', kwargs={'pk': self.pk})
+        #return reverse('detailed_like_post', kwargs={'pk': self.pk})
+
+    def refresh_to_home(self):
+        return reverse('blog-home')
+

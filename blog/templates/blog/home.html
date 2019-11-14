@@ -1,5 +1,7 @@
 {% extends "blog/base.html" %}
+{% load crispy_forms_tags %}
 {% block content %}
+    
     {% for post in posts %}
         <article class="media content-section">
           <img class="rounded-circle article-img" src="{{ post.author.profile.image.url }}">
@@ -10,9 +12,32 @@
             </div>
             <h2><a class="article-title" href="{% url 'post-detail' post.id %}">{{ post.title }}</a></h2>
             <p class="article-content">{{ post.content }}</p>
+            <div>
+              <p class="article-content"></p>
+              
+                  
+              <form action="{% url 'like_post' %}" method="POST">
+              {% csrf_token %}
+                  {% if is_liked %}
+                      <button class="btn-outline-danger" type="submit" name="post_id" value="{{post.id}}">Dislike</button>
+                  {% else %}
+                      <button class="btn-outline-info" type="submit" name="post_id" value="{{post.id}}">Like</button>
+                  {% endif %}
+
+
+                  {% for like in post.likes.all %}
+                    {{ like }}
+                  {% endfor %}
+
+                  {{ form|crispy }}
+              </form>
+            </div>
+            
+            
           </div>
         </article>
     {% endfor %}
+    </form>
     {% if is_paginated %}
         {% if page_obj.has_previous %}
           <a class="btn btn-outline-info mb-4" href="?page=1">First</a>
